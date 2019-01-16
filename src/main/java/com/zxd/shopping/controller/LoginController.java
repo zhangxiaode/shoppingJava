@@ -36,15 +36,13 @@ public class LoginController {
         String jsontext="{\"name\":\"wjk\",\"age\":\"22\",\"love\":[{\"love1\":\"coding\",\"love2\":\"movie\"},{\"love1\":\"money\",\"love2\":\"NBA\"}]}";
         JSONObject m1=new JSONObject();
         m1=JSON.parseObject(jsontext);
+        return ResultUtil.error(300,"没有权限");
 //        return ResultUtil.success(m1);
-        Integer mycode=300;
-        String msg="没有权限";
-        return ResultUtil.error(mycode,msg);
 //        return m1;
     }
 
     @RequestMapping(value="/login", method = RequestMethod.GET)
-    public String login(@RequestParam(value = "code", required = false) String code){
+    public String login(@RequestParam(value = "code", required = false) String code) throws Exception {
         System.out.println(appId);
         System.out.println(secret);
         System.out.println(code);
