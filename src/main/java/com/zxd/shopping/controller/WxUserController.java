@@ -6,7 +6,6 @@ import com.zxd.shopping.bean.WxUser;
 import com.zxd.shopping.bean.WxUser2;
 import com.zxd.shopping.service.WxUserService;
 import org.mybatis.spring.annotation.MapperScan;
-import org.omg.PortableInterceptor.SYSTEM_EXCEPTION;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.ComponentScan;
@@ -147,13 +146,6 @@ public class WxUserController {
 //        System.out.println("111Access_token:" + login2.getAccess_token());
 //        System.out.println("222Openid:" + login2.getExpires_in());
 
-
-//        String url3="https://api.weixin.qq.com/sns/userinfo?access_token=" + login2.getAccess_token() + "&openid=" + login.getOpenid() + "&lang=zh_CN";
-//        RestTemplate restTemplate3 = new RestTemplate();
-//        ResponseEntity<String> responseEntity3 = restTemplate3.exchange(url3, HttpMethod.GET, null, String.class);
-//        String sessionData3 = responseEntity3.getBody();
-
-
         JSONObject result = JSON.parseObject(new String(this.decrypt(encryptedData, login.getSession_key(), iv),"UTF-8"));
         WxUser2 wxUser2 = JSON.parseObject(JSONObject.toJSON(result).toString(), new TypeReference<WxUser2>() {});
         wxUser = new WxUser();
@@ -168,9 +160,7 @@ public class WxUserController {
         wxUser.setUnionid(wxUser2.getUnionId());
         long timeStamp = System.currentTimeMillis();
         wxUser.setCtime(timeStamp);
-//        wxUserService = new WxUserService();
         wxUserService.addUser(wxUser);
-        System.out.println(wxUserService.findUser("aasdfsdafasf"));
         return ResultUtil.success(JSONObject.parseObject(JSONObject.toJSON(wxUser).toString()));
     }
 }
