@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- 指定工作空间，要与接口名相同，源代码没有去看，猜测应该是通过"这里的namespace.下边方法的id"来定位方法的 -->
+<mapper namespace="com.zxd.shopping.mapper.WxUserMapper">
+
+    <!-- insert wx_user -->
+    <insert id = "insert" parameterType="com.zxd.shopping.bean.WxUser">
+        insert into wx_user(openid,nickname,avatarurl,gender,country,province,city,language,unionid,ctime) values(#{openid},#{nickname},#{avatarurl},#{gender},#{country},#{province},#{city},#{language},#{unionid},#{ctime});
+    </insert>
+
+    <!-- update wx_user -->
+    <update id="update" parameterType="com.zxd.shopping.bean.WxUser">
+        update wx_user set nickname=#{nickname} , avatarurl=#{avatarurl} , gender = #{gender}, country = #{country}, province = #{province}, city = #{city}, language = #{language}, unionid = #{unionid}, ctime = #{ctime} where openid=#{openid}
+    </update>
+
+    <!-- find wx_user -->
+    <select id="find" parameterType="String" resultType="com.zxd.shopping.bean.WxUser">
+        select openid,nickname,avatarurl,gender,country,province,city,language,unionid,ctime from wx_user where openid=#{openid}
+    </select>
+
+    <!-- delete wx_user -->
+    <delete id="delete" parameterType="String">
+        delete from wx_user where openid=#{openid}
+    </delete>
+</mapper>

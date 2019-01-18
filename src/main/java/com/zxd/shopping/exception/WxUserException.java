@@ -1,9 +1,9 @@
 package com.zxd.shopping.exception;
 
-public class LoginException {
+public class WxUserException {
     private Integer code;
 
-    public LoginException(Integer code,String message) {
+    public WxUserException(Integer code, String message) {
 //        super(message);
 //        this.code = code();
     }
