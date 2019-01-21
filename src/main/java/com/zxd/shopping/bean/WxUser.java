@@ -75,3 +75,4 @@ public class WxUser {
         this.ctime = ctime;
     }
 }
+

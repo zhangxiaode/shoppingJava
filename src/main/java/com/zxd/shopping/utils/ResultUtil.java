@@ -3,8 +3,8 @@ package com.zxd.shopping.utils;
 public class ResultUtil {
     public static Result success(Object object) {
         Result result = new Result();
-        result.setCode(200);
-        result.setMsg("成功");
+        result.setCode(2000);
+        result.setMsg("请求成功");
         result.setData(object);
         return result;
     }

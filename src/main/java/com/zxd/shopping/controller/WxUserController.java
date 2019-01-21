@@ -1,10 +1,9 @@
 package com.zxd.shopping.controller;
 
-import com.zxd.shopping.bean.Login;
-import com.zxd.shopping.bean.Login2;
 import com.zxd.shopping.bean.WxUser;
-import com.zxd.shopping.bean.WxUser2;
 import com.zxd.shopping.service.WxUserService;
+import com.zxd.shopping.utils.ExceptionHandle;
+import com.zxd.shopping.utils.ResultEnum;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -20,7 +19,6 @@ import org.springframework.http.HttpMethod;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.alibaba.fastjson.TypeReference;
 
 import com.zxd.shopping.utils.ResultUtil;
 
@@ -28,10 +26,14 @@ import java.security.Key;
 import java.security.NoSuchAlgorithmException;
 import java.security.Security;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 import javax.crypto.Cipher;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 import org.apache.commons.codec.binary.Base64;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
@@ -51,7 +53,7 @@ public class WxUserController {
 
     // 加解密算法/模式/填充方式
     final String algorithmStr = "AES/CBC/PKCS7Padding";
-    //
+
     private Key key;
     private Cipher cipher;
 
@@ -104,8 +106,6 @@ public class WxUserController {
         return encryptedText;
     }
 
-
-
     @Value("${wechat.appId}")
     private String appId;
 
@@ -116,51 +116,51 @@ public class WxUserController {
     private String grantType;
 
     @RequestMapping(value="/login2", method = RequestMethod.POST)
-    public Object login2(@RequestBody String code) throws Exception{
+    public Object login2(HttpServletRequest request, @RequestBody String code) throws Exception{
         String jsontext="{\"name\":\"wjk\",\"age\":\"22\",\"love\":[{\"love1\":\"coding\",\"love2\":\"movie\"},{\"love1\":\"money\",\"love2\":\"NBA\"}]}";
         JSONObject m1 = JSON.parseObject(jsontext);
-//        return ResultUtil.error(300,"没有权限");
-        return ResultUtil.success(m1);
+//        return ResultUtil.error(2001,"token失效");
+//        throw new ExceptionHandle(ResultEnum.notoken);
+//        return ResultUtil.success(m1);
+
+        System.out.println(request.getSession().getAttribute("token"));
+        Map<String, Object> response = new HashMap();
+        response.put("token",request.getSession().getAttribute("token"));
+        return ResultUtil.success(response);
     }
 
     @RequestMapping(value="/login", method = RequestMethod.GET)
-    public Object login(@RequestParam(value = "code", required = true) String code, @RequestParam(value="encryptedData", required = true) String encryptedData, @RequestParam(value="iv", required = true) String iv) throws Exception {
+    public Object login(HttpServletRequest request, @RequestParam(value = "code", required = true) String code, @RequestParam(value="encryptedData", required = true) String encryptedData, @RequestParam(value="iv", required = true) String iv) throws Exception {
         String url="https://api.weixin.qq.com/sns/jscode2session?appid=" + appId + "&secret=" + secret + "&js_code=" + code + "&grant_type=" + grantType;
         RestTemplate restTemplate = new RestTemplate();
         ResponseEntity<String> responseEntity = restTemplate.exchange(url, HttpMethod.GET, null, String.class);
         String sessionData = responseEntity.getBody();
-        Login login = JSON.parseObject(sessionData, new TypeReference<Login>() {});
+        Map<String, String> login = new HashMap(JSON.parseObject(sessionData));
 
-        String url2="https://api.weixin.qq.com/cgi-bin/token?appid=" + appId + "&secret=" + secret + "&grant_type=client_credential";
-        RestTemplate restTemplate2 = new RestTemplate();
-        ResponseEntity<String> responseEntity2 = restTemplate2.exchange(url2, HttpMethod.GET, null, String.class);
-        String sessionData2 = responseEntity2.getBody();
-        Login2 login2 = JSON.parseObject(sessionData2, new TypeReference<Login2>() {});
-
-//        System.out.println("1111appId" + appId);
-//        System.out.println("2222secret" + secret);
-//        System.out.println("3333code" + code);
-//        System.out.println("4444encryptedData" + encryptedData);
-//        System.out.println("5555iv" + iv);
-
-//        System.out.println("111Access_token:" + login2.getAccess_token());
-//        System.out.println("222Openid:" + login2.getExpires_in());
-
-        JSONObject result = JSON.parseObject(new String(this.decrypt(encryptedData, login.getSession_key(), iv),"UTF-8"));
-        WxUser2 wxUser2 = JSON.parseObject(JSONObject.toJSON(result).toString(), new TypeReference<WxUser2>() {});
+        Map<String, Object> result = new HashMap(JSON.parseObject(new String(this.decrypt(encryptedData, login.get("session_key"), iv),"UTF-8")));
         wxUser = new WxUser();
-        wxUser.setOpenid(wxUser2.getOpenId());
-        wxUser.setNickname(wxUser2.getNickName());
-        wxUser.setAvatarurl(wxUser2.getAvatarUrl());
-        wxUser.setGender(wxUser2.getGender());
-        wxUser.setCountry(wxUser2.getCountry());
-        wxUser.setProvince(wxUser2.getProvince());
-        wxUser.setCity(wxUser2.getCity());
-        wxUser.setLanguage(wxUser2.getLanguage());
-        wxUser.setUnionid(wxUser2.getUnionId());
-        long timeStamp = System.currentTimeMillis();
-        wxUser.setCtime(timeStamp);
-        wxUserService.addUser(wxUser);
-        return ResultUtil.success(JSONObject.parseObject(JSONObject.toJSON(wxUser).toString()));
+        wxUser.setOpenid((String) result.get("openId"));
+        wxUser.setNickname((String) result.get("nickName"));
+        wxUser.setAvatarurl((String) result.get("avatarUrl"));
+        wxUser.setGender((Integer) result.get("gender"));
+        wxUser.setCountry((String) result.get("country"));
+        wxUser.setProvince((String) result.get("province"));
+        wxUser.setCity((String) result.get("city"));
+        wxUser.setLanguage((String) result.get("language"));
+        wxUser.setUnionid((String) result.get("unionId"));
+        wxUser.setCtime(System.currentTimeMillis());
+        if(wxUserService.findUser(wxUser.getOpenid())==null) {
+            wxUserService.addUser(wxUser);
+        } else {
+            wxUserService.updateUser(wxUser);
+        }
+
+        request.getSession().setAttribute("token",login.get("session_key"));
+        System.out.println(request.getSession().getAttribute("token"));
+
+        Map<String, Object> response = new HashMap();
+        response.put("token",login.get("session_key"));
+        response.put("userInfo",wxUser);
+        return ResultUtil.success(response);
     }
 }
