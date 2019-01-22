@@ -8,6 +8,7 @@ import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -28,12 +29,11 @@ import java.security.Security;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import javax.annotation.Resource;
 import javax.crypto.Cipher;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 
 import org.apache.commons.codec.binary.Base64;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
@@ -47,6 +47,10 @@ public class WxUserController {
     @Autowired
     private WxUserService wxUserService;
     private WxUser wxUser;
+
+    @Resource
+    private RedisTemplate redisTemplate;
+
 
     // 算法名称
     final String KEY_ALGORITHM = "AES";
@@ -115,22 +119,8 @@ public class WxUserController {
     @Value("${wechat.grantType}")
     private String grantType;
 
-    @RequestMapping(value="/login2", method = RequestMethod.POST)
-    public Object login2(HttpServletRequest request, @RequestBody String code) throws Exception{
-        String jsontext="{\"name\":\"wjk\",\"age\":\"22\",\"love\":[{\"love1\":\"coding\",\"love2\":\"movie\"},{\"love1\":\"money\",\"love2\":\"NBA\"}]}";
-        JSONObject m1 = JSON.parseObject(jsontext);
-//        return ResultUtil.error(2001,"token失效");
-//        throw new ExceptionHandle(ResultEnum.notoken);
-//        return ResultUtil.success(m1);
-
-        System.out.println(request.getSession().getAttribute("token"));
-        Map<String, Object> response = new HashMap();
-        response.put("token",request.getSession().getAttribute("token"));
-        return ResultUtil.success(response);
-    }
-
     @RequestMapping(value="/login", method = RequestMethod.GET)
-    public Object login(HttpServletRequest request, @RequestParam(value = "code", required = true) String code, @RequestParam(value="encryptedData", required = true) String encryptedData, @RequestParam(value="iv", required = true) String iv) throws Exception {
+    public Object login(@RequestParam(value = "code", required = true) String code, @RequestParam(value="encryptedData", required = true) String encryptedData, @RequestParam(value="iv", required = true) String iv) throws Exception {
         String url="https://api.weixin.qq.com/sns/jscode2session?appid=" + appId + "&secret=" + secret + "&js_code=" + code + "&grant_type=" + grantType;
         RestTemplate restTemplate = new RestTemplate();
         ResponseEntity<String> responseEntity = restTemplate.exchange(url, HttpMethod.GET, null, String.class);
@@ -155,12 +145,27 @@ public class WxUserController {
             wxUserService.updateUser(wxUser);
         }
 
-        request.getSession().setAttribute("token",login.get("session_key"));
-        System.out.println(request.getSession().getAttribute("token"));
+        redisTemplate.opsForValue().set("token",login.get("session_key"));
+        System.out.println(redisTemplate.opsForValue().get("token"));
 
         Map<String, Object> response = new HashMap();
         response.put("token",login.get("session_key"));
         response.put("userInfo",wxUser);
         return ResultUtil.success(response);
     }
+
+    @RequestMapping(value="/login2", method = RequestMethod.POST)
+    public Object login2(@RequestBody String code) throws Exception{
+        String jsontext="{\"name\":\"wjk\",\"age\":\"22\",\"love\":[{\"love1\":\"coding\",\"love2\":\"movie\"},{\"love1\":\"money\",\"love2\":\"NBA\"}]}";
+        JSONObject m1 = JSON.parseObject(jsontext);
+//        return ResultUtil.error(2001,"token失效");
+//        throw new ExceptionHandle(ResultEnum.notoken);
+//        return ResultUtil.success(m1);
+
+        System.out.println(redisTemplate.opsForValue().get("token"));
+        Map<String, Object> response = new HashMap();
+        response.put("token",redisTemplate.opsForValue().get("token"));
+        return ResultUtil.success(response);
+    }
+
 }
