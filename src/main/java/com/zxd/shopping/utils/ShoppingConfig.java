@@ -1,5 +1,6 @@
 package com.zxd.shopping.utils;
 
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
@@ -7,19 +8,23 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
 public class ShoppingConfig implements WebMvcConfigurer {
-    @Override
+
+    @Bean
+    public FilterInterceptor filterInterceptor(){
+        return new FilterInterceptor();
+    }
+
     public void addInterceptors(InterceptorRegistry registry) {
         // 注册拦截器
-        FilterInterceptor loginInterceptor = new FilterInterceptor();
-        InterceptorRegistration loginRegistry = registry.addInterceptor(loginInterceptor);
+
+        InterceptorRegistration filterRegistry = registry.addInterceptor(filterInterceptor());
         // 拦截路径
-        loginRegistry.addPathPatterns("/**");
+        filterRegistry.addPathPatterns("/apis/**");
         // 排除路径
-        loginRegistry.excludePathPatterns("/");
-        loginRegistry.excludePathPatterns("/apis/login");
+        filterRegistry.excludePathPatterns("/apis/login");
         // 排除资源请求
-//        loginRegistry.excludePathPatterns("/css/login/*.css");
-//        loginRegistry.excludePathPatterns("/js/login/**/*.js");
-//        loginRegistry.excludePathPatterns("/image/login/*.png");
+//        filterRegistry.excludePathPatterns("/css/login/*.css");
+//        filterRegistry.excludePathPatterns("/js/login/**/*.js");
+//        filterRegistry.excludePathPatterns("/image/login/*.png");
     }
 }

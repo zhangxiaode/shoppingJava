@@ -1,25 +1,41 @@
 package com.zxd.shopping.utils;
 
+import com.alibaba.fastjson.JSON;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
 
-import java.util.Enumeration;
+import java.io.PrintWriter;
 
 /**
  * @author 张孝德
  * @Date 2019/1/23
  * 自定义拦截器，用以拦截接口token
  */
+
 public class FilterInterceptor implements HandlerInterceptor {
+    @Autowired
+    RedisUtil redisUtil;
     //预处理
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object obj) throws Exception {
         // 拦截token
-//        System.out.println("111" + token);
+        if(redisUtil.get("token") == null) {
+            response.reset();
+            response.setCharacterEncoding("UTF-8");
+            response.setContentType("application/json;charset=UTF-8");
+            PrintWriter pw = response.getWriter();
+            pw.write(JSON.toJSONString(ResultUtil.error(2001,"token失效")));
+            pw.flush();
+            pw.close();
+            return false;
+        } else {
+            redisUtil.set("token", redisUtil.get("token"));
+        }
         return true;
     }
 

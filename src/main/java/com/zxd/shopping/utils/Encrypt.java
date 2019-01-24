@@ -76,7 +76,6 @@ public class Encrypt {
     public String md5(String text, String key) throws Exception {
         //加密后的字符串
         String encodeStr=DigestUtils.md5Hex(text + key);
-//        System.out.println("MD5加密后的字符串为:encodeStr="+encodeStr);
         return encodeStr;
     }
 
@@ -173,7 +172,7 @@ public class Encrypt {
             e.printStackTrace();
         }
 
-        //如果有错就返加nulll
+        //如果有错就返加null
         return null;
     }
 

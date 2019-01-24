@@ -2,13 +2,13 @@ package com.zxd.shopping.controller;
 
 import com.zxd.shopping.bean.WxUser;
 import com.zxd.shopping.service.WxUserService;
-import com.zxd.shopping.utils.ExceptionHandle;
-import com.zxd.shopping.utils.ResultEnum;
+import com.zxd.shopping.utils.Encrypt;
+import com.zxd.shopping.utils.RedisUtil;
+import com.zxd.shopping.utils.ResultUtil;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.ComponentScan;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -21,13 +21,9 @@ import org.springframework.http.HttpMethod;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 
-import com.zxd.shopping.utils.ResultUtil;
-import com.zxd.shopping.utils.Encrypt;
-
 import java.util.HashMap;
 import java.util.Map;
 import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
 
 @RestController
 @RequestMapping("/apis")
@@ -39,8 +35,10 @@ public class WxUserController {
     private WxUserService wxUserService;
     private WxUser wxUser;
 
+//    @Resource
+//    private RedisTemplate redisTemplate;
     @Resource
-    private RedisTemplate redisTemplate;
+    RedisUtil redisUtil;
 
     @Value("${wechat.appId}")
     private String appId;
@@ -52,6 +50,7 @@ public class WxUserController {
     private String grantType;
 
     final Encrypt encrypt = new Encrypt();
+    final String salt = "zxdkxljfnx";
 
     @RequestMapping(value="/login", method = RequestMethod.GET)
     public Object login(@RequestParam(value = "code", required = true) String code, @RequestParam(value="encryptedData", required = true) String encryptedData, @RequestParam(value="iv", required = true) String iv) throws Exception {
@@ -83,32 +82,29 @@ public class WxUserController {
          * 由oppenid + session_key + salt 生成自定义登陆态token.
          */
 
-        String salt = "zxdkxljfnx";
         String plaintext = wxUser.getOpenid() + "," + login.get("session_key");
         String aesEncode = encrypt.AESEncode(salt, plaintext);
-        String aesDncode = encrypt.AESDncode(salt, aesEncode);
-        String[] oppSes=aesDncode.split(",");
-//        System.out.println("oppenid：" + oppSes[0].toString());
-//        System.out.println("session_key：" + oppSes[1].toString());
-
-        redisTemplate.opsForValue().set("token", aesEncode);
+        redisUtil.set("token", aesEncode);
 
         Map<String, Object> response = new HashMap();
-        response.put("token",login.get("session_key"));
+        response.put("token",aesEncode);
         response.put("userInfo",wxUser);
         return ResultUtil.success(response);
     }
 
     @RequestMapping(value="/login2", method = RequestMethod.POST)
-    public Object login2(@RequestBody String token) throws Exception{
+    public Object login2(@RequestBody JSONObject param) throws Exception{
         String jsontext="{\"name\":\"wjk\",\"age\":\"22\",\"love\":[{\"love1\":\"coding\",\"love2\":\"movie\"},{\"love1\":\"money\",\"love2\":\"NBA\"}]}";
         JSONObject m1 = JSON.parseObject(jsontext);
 //        return ResultUtil.error(2001,"token失效");
 //        throw new ExceptionHandle(ResultEnum.notoken);
 //        return ResultUtil.success(m1);
+
+        String aesDncode = encrypt.AESDncode(salt, (String) param.get("token"));
+        String[] oppSes=aesDncode.split(",");
+        String oppenid = oppSes[0].toString();
         Map<String, Object> response = new HashMap();
-        response.put("token",redisTemplate.opsForValue().get("token"));
-        System.out.println("token：" + token);
+        response.put("oppenid",oppenid);
         return ResultUtil.success(response);
     }
 
