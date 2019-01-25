@@ -49,8 +49,8 @@ public class WxUserController {
     @Value("${wechat.grantType}")
     private String grantType;
 
-    final Encrypt encrypt = new Encrypt();
-    final String salt = "zxdkxljfnx";
+    Encrypt encrypt = new Encrypt();
+    String salt = "zxdkxljfnx";
 
     @RequestMapping(value="/login", method = RequestMethod.GET)
     public Object login(@RequestParam(value = "code", required = true) String code, @RequestParam(value="encryptedData", required = true) String encryptedData, @RequestParam(value="iv", required = true) String iv) throws Exception {
@@ -92,20 +92,21 @@ public class WxUserController {
         return ResultUtil.success(response);
     }
 
-    @RequestMapping(value="/login2", method = RequestMethod.POST)
-    public Object login2(@RequestBody JSONObject param) throws Exception{
-        String jsontext="{\"name\":\"wjk\",\"age\":\"22\",\"love\":[{\"love1\":\"coding\",\"love2\":\"movie\"},{\"love1\":\"money\",\"love2\":\"NBA\"}]}";
-        JSONObject m1 = JSON.parseObject(jsontext);
+    @RequestMapping(value="/login2", method = RequestMethod.POST,produces="application/json;charset=UTF-8")
+    public Object login2(@RequestBody Map<String, Object> params) throws Exception{
+//        String jsontext="{\"name\":\"wjk\",\"age\":\"22\",\"love\":[{\"love1\":\"coding\",\"love2\":\"movie\"},{\"love1\":\"money\",\"love2\":\"NBA\"}]}";
+//        JSONObject m1 = JSON.parseObject(jsontext);
 //        return ResultUtil.error(2001,"token失效");
 //        throw new ExceptionHandle(ResultEnum.notoken);
 //        return ResultUtil.success(m1);
 
-        String aesDncode = encrypt.AESDncode(salt, (String) param.get("token"));
+        String token = (String) params.get("token");
+        String aesDncode = encrypt.AESDncode(salt, token);
         String[] oppSes=aesDncode.split(",");
-        String oppenid = oppSes[0].toString();
-        Map<String, Object> response = new HashMap();
-        response.put("oppenid",oppenid);
-        return ResultUtil.success(response);
+        String oppenid = oppSes[0];
+        Map<String, String> res = new HashMap();
+        res.put("oppenid",oppenid);
+        return ResultUtil.success(res);
     }
 
 }

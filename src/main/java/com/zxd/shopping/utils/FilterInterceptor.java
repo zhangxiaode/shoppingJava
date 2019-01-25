@@ -35,8 +35,8 @@ public class FilterInterceptor implements HandlerInterceptor {
             return false;
         } else {
             redisUtil.set("token", redisUtil.get("token"));
+            return true;
         }
-        return true;
     }
 
     /**

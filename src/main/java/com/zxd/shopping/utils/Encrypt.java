@@ -86,7 +86,17 @@ public class Encrypt {
             KeyGenerator keygen=KeyGenerator.getInstance("AES");
             //2.根据ecnodeRules规则初始化密钥生成器
             //生成一个128位的随机源,根据传入的字节数组
-            keygen.init(128, new SecureRandom(encodeRules.getBytes()));
+//            keygen.init(128, new SecureRandom(encodeRules.getBytes())); // 不兼容Linux
+            // 兼容Linux+windows
+            SecureRandom random=null;
+            try {
+                random = SecureRandom.getInstance("SHA1PRNG","SUN");
+            } catch (NoSuchProviderException e1) {
+                e1.printStackTrace();
+            }
+            random.setSeed(encodeRules.getBytes());
+            keygen.init(128, random);
+
             //3.产生原始对称密钥
             SecretKey original_key=keygen.generateKey();
             //4.获得原始对称密钥的字节数组
@@ -139,7 +149,17 @@ public class Encrypt {
             KeyGenerator keygen=KeyGenerator.getInstance("AES");
             //2.根据ecnodeRules规则初始化密钥生成器
             //生成一个128位的随机源,根据传入的字节数组
-            keygen.init(128, new SecureRandom(encodeRules.getBytes()));
+//            keygen.init(128, new SecureRandom(encodeRules.getBytes())); // 不兼容Linux
+            // 兼容Linux+windows
+            SecureRandom random=null;
+            try {
+                random = SecureRandom.getInstance("SHA1PRNG","SUN");
+            } catch (NoSuchProviderException e1) {
+                e1.printStackTrace();
+            }
+            random.setSeed(encodeRules.getBytes());
+            keygen.init(128, random);
+
             //3.产生原始对称密钥
             SecretKey original_key=keygen.generateKey();
             //4.获得原始对称密钥的字节数组

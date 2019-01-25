@@ -1,0 +1,23 @@
+2019-01-25 14:41:24.640  INFO 2044 --- [main] com.zxd.shopping.ShoppingApplication     : Starting ShoppingApplication on DESKTOP-4SR8DSC with PID 2044 (D:\zxd\software\java\workspace\shoppingJava\target\classes started by zxd in D:\zxd\software\java\workspace\shoppingJava)
+2019-01-25 14:41:24.646  INFO 2044 --- [main] com.zxd.shopping.ShoppingApplication     : No active profile set, falling back to default profiles: default
+2019-01-25 14:41:25.958  WARN 2044 --- [main] o.m.s.mapper.ClassPathMapperScanner      : Skipping MapperFactoryBean with name 'userMapper' and 'com.zxd.shopping.mapper.UserMapper' mapperInterface. Bean already defined with the same name!
+2019-01-25 14:41:26.014  WARN 2044 --- [main] o.m.s.mapper.ClassPathMapperScanner      : Skipping MapperFactoryBean with name 'wxUserMapper' and 'com.zxd.shopping.mapper.WxUserMapper' mapperInterface. Bean already defined with the same name!
+2019-01-25 14:41:26.014  WARN 2044 --- [main] o.m.s.mapper.ClassPathMapperScanner      : No MyBatis mapper was found in '[com.zxd.shopping.mapper]' package. Please check your configuration.
+2019-01-25 14:41:26.286  INFO 2044 --- [main] .s.d.r.c.RepositoryConfigurationDelegate : Multiple Spring Data modules found, entering strict repository configuration mode!
+2019-01-25 14:41:26.290  INFO 2044 --- [main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data repositories in DEFAULT mode.
+2019-01-25 14:41:26.337  INFO 2044 --- [main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 26ms. Found 0 repository interfaces.
+2019-01-25 14:41:27.034  INFO 2044 --- [main] trationDelegate$BeanPostProcessorChecker : Bean 'org.springframework.transaction.annotation.ProxyTransactionManagementConfiguration' of type [org.springframework.transaction.annotation.ProxyTransactionManagementConfiguration$$EnhancerBySpringCGLIB$$7817c310] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2019-01-25 14:41:28.077  INFO 2044 --- [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port(s): 9090 (http)
+2019-01-25 14:41:28.127  INFO 2044 --- [main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2019-01-25 14:41:28.128  INFO 2044 --- [main] org.apache.catalina.core.StandardEngine  : Starting Servlet Engine: Apache Tomcat/9.0.13
+2019-01-25 14:41:28.148  INFO 2044 --- [main] o.a.catalina.core.AprLifecycleListener   : An older version [1.2.17] of the APR based Apache Tomcat Native library is installed, while Tomcat recommends a minimum version of [1.2.18]
+2019-01-25 14:41:28.149  INFO 2044 --- [main] o.a.catalina.core.AprLifecycleListener   : Loaded APR based Apache Tomcat Native library [1.2.17] using APR version [1.6.3].
+2019-01-25 14:41:28.150  INFO 2044 --- [main] o.a.catalina.core.AprLifecycleListener   : APR capabilities: IPv6 [true], sendfile [true], accept filters [false], random [true].
+2019-01-25 14:41:28.150  INFO 2044 --- [main] o.a.catalina.core.AprLifecycleListener   : APR/OpenSSL configuration: useAprConnector [false], useOpenSSL [true]
+2019-01-25 14:41:29.214  INFO 2044 --- [main] o.a.catalina.core.AprLifecycleListener   : OpenSSL successfully initialized [OpenSSL 1.0.2o  27 Mar 2018]
+2019-01-25 14:41:29.411  INFO 2044 --- [main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2019-01-25 14:41:29.412  INFO 2044 --- [main] o.s.web.context.ContextLoader            : Root WebApplicationContext: initialization completed in 4638 ms
+2019-01-25 14:41:31.131  INFO 2044 --- [main] o.s.s.concurrent.ThreadPoolTaskExecutor  : Initializing ExecutorService 'applicationTaskExecutor'
+2019-01-25 14:41:31.743  INFO 2044 --- [main] o.s.s.c.ThreadPoolTaskScheduler          : Initializing ExecutorService 'taskScheduler'
+2019-01-25 14:41:31.901  INFO 2044 --- [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port(s): 9090 (http) with context path ''
+2019-01-25 14:41:31.908  INFO 2044 --- [main] com.zxd.shopping.ShoppingApplication     : Started ShoppingApplication in 8.128 seconds (JVM running for 8.966)
