@@ -94,12 +94,6 @@ public class WxUserController {
 
     @RequestMapping(value="/login2", method = RequestMethod.POST,produces="application/json;charset=UTF-8")
     public Object login2(@RequestBody Map<String, Object> params) throws Exception{
-//        String jsontext="{\"name\":\"wjk\",\"age\":\"22\",\"love\":[{\"love1\":\"coding\",\"love2\":\"movie\"},{\"love1\":\"money\",\"love2\":\"NBA\"}]}";
-//        JSONObject m1 = JSON.parseObject(jsontext);
-//        return ResultUtil.error(2001,"token失效");
-//        throw new ExceptionHandle(ResultEnum.notoken);
-//        return ResultUtil.success(m1);
-
         String token = (String) params.get("token");
         String aesDncode = encrypt.AESDncode(salt, token);
         String[] oppSes=aesDncode.split(",");
@@ -108,5 +102,4 @@ public class WxUserController {
         res.put("oppenid",oppenid);
         return ResultUtil.success(res);
     }
-
 }
